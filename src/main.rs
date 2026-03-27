@@ -12,6 +12,15 @@ async fn main() {
 }
 
 pub async fn rpc(client: RpcClient) {
-    let res = client.get_block_number().await.unwrap();
-    println!("{res}");
+    let block_number = client.get_block_number().await;
+    match block_number {
+        Ok(b) => println!("block_number: {}", b),
+        Err(e) => println!("error: {}", e),
+    }
+
+    let chain_id = client.get_chain_id().await;
+    match chain_id {
+        Ok(c) => println!("chain_id: {}", c),
+        Err(e) => println!("error: {}", e),
+    }
 }

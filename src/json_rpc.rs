@@ -14,7 +14,7 @@ pub struct JsonRpcResponse<T> {
     pub jsonrpc: String,
     pub id: u64,
     pub result: Option<T>,
-    pub error: Option<T>
+    pub error: Option<serde_json::Value>
 }
 
 impl JsonRpcRequest {

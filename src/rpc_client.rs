@@ -12,8 +12,12 @@ impl RpcClient {
     }
 
     pub async fn get_block_number(&self) -> Result<String, reqwest::Error> {
-        self.request::<String>("eth_getBlockNumber", vec![]).await
+        self.request::<String>("eth_blockNumber", vec![]).await
         
+    }
+
+    pub async fn get_chain_id(&self) -> Result<String, reqwest::Error> {
+        self.request::<String>("eth_chainId", vec![]).await
     }
 
     async fn request<T>(&self, method: &str, params: Vec<Value>) -> Result<T, reqwest::Error> 
