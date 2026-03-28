@@ -1,12 +1,9 @@
-[package]
+[workspace]
 name = "rpc-client-rs"
 version = "0.1.0"
 edition = "2024"
 
-[dependencies]
-tokio = { version = "1", features = ["full"] }
-reqwest = { version = "0.13.2", features = ["json"] }
-serde_json = "1"
-serde = { version = "1", features = ["derive"] }
-thiserror = "2.0.18"
-dotenv = "0.15"
+members = [
+    "crates/eth_types",
+    "crates/rpc-client"
+]
