@@ -3,7 +3,11 @@ use std::{fmt::Display, num::ParseIntError, str::FromStr};
 use eth_types::U256;
 use serde_json::{Value, json};
 
-use crate::{JsonRpcRequest, json_rpc::JsonRpcResponse};
+use crate::{
+    JsonRpcRequest,
+    json_rpc::JsonRpcResponse,
+    types::block::Block,
+};
 
 pub struct RpcClient {
     url: String,
@@ -39,10 +43,10 @@ impl RpcClient {
         Ok(balance)
     }
 
-    pub async fn get_block_by_number(&self, block: u64) -> Result<Value, RpcError> {
+    pub async fn get_block_by_number(&self, block: u64) -> Result<Option<Block>, RpcError> {
         let hex_block = format!("{:#x}", block);
         let params = vec![json!(hex_block), json!(false)];
-        let block = self.request::<Value>("eth_getBlockByNumber", params).await?;
+        let block = self.request::<Option<Block>>("eth_getBlockByNumber", params).await?;
         Ok(block)
     }
 

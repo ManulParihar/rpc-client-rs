@@ -23,8 +23,14 @@ pub async fn rpc(client: RpcClient) -> Result<(), RpcError>{
     let balance = client.get_balance("0x0000000000000000000000000000000000000000").await?;
     println!("balance: {}", balance);
 
-    let block = client.get_block_by_number(block_number).await?;
-    println!("block by number {}: {}", block_number, block);
+    let block = client.get_block_by_number(block_number).await;
+    println!("block by number {}:", block_number);
+
+    match block {
+        Ok(Some(b)) => println!("{:?}", b),
+        Ok(None) => println!("Block not found"),
+        Err(e) => println!("Error: {}", e),
+    };
 
     Ok(())
 }
