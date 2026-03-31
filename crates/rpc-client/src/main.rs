@@ -27,7 +27,7 @@ pub async fn rpc(client: RpcClient) -> Result<(), RpcError>{
     println!("block by number {}:", block_number);
 
     match block {
-        Ok(Some(b)) => println!("{:?}", b),
+        Ok(Some(b)) => println!("{:#?}", b),
         Ok(None) => println!("Block not found"),
         Err(e) => println!("Error: {}", e),
     };

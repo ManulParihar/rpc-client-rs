@@ -45,7 +45,7 @@ impl RpcClient {
 
     pub async fn get_block_by_number(&self, block: u64) -> Result<Option<Block>, RpcError> {
         let hex_block = format!("{:#x}", block);
-        let params = vec![json!(hex_block), json!(false)];
+        let params = vec![json!(hex_block), json!(true)];
         let block = self.request::<Option<Block>>("eth_getBlockByNumber", params).await?;
         Ok(block)
     }
