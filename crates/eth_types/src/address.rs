@@ -1,5 +1,7 @@
 use std::{fmt::Debug, str::FromStr};
 
+use serde::{Deserialize, de::Visitor};
+
 #[derive(thiserror::Error, Debug, PartialEq, Eq)]
 pub enum AddressError {
     #[error("Invalid length: expected 20 bytes")]
@@ -65,5 +67,43 @@ impl FromStr for Address {
         let s = s.strip_prefix("0x").unwrap_or(s);
         let s_vec = hex::decode(s).map_err(|_| AddressError::InvalidHex)?;
         Address::from_slice(&s_vec)
+    }
+}
+
+struct AddressVisitor;
+
+impl<'de> Visitor<'de> for AddressVisitor {
+    type Value = Address;
+
+    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+        formatter.write_str("Address data type (42 charachter hex string)")
+    }
+
+    fn visit_string<E>(self, v: String) -> Result<Self::Value, E>
+        where
+            E: serde::de::Error, {
+        self.visit_str(v.as_str())
+    }
+
+    fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+        where
+            E: serde::de::Error, {
+        let address_string = Address::from_str(v);
+        match address_string {
+            Ok(v) => Ok(v),
+            Err(e) => match e {
+                AddressError::InvalidHex => Err(E::custom(format!("Invlaid length: expected 20 bytes"))),
+                AddressError::InvalidLength => Err(E::custom(format!("Invalid hex")))
+            }
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for Address {
+
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where
+            D: serde::Deserializer<'de> {
+        deserializer.deserialize_string(AddressVisitor)
     }
 }

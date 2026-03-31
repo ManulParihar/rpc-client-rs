@@ -1,5 +1,7 @@
 use std::{fmt::Debug, str::FromStr};
 
+use serde::{Deserialize, de::Visitor};
+
 #[derive(thiserror::Error, Debug, PartialEq, Eq)]
 pub enum H256Error {
     #[error("Invlaid length: expected 32 bytes")]
@@ -63,5 +65,43 @@ impl FromStr for H256 {
         let s = s.strip_prefix("0x").unwrap_or(s);
         let value = hex::decode(s).map_err(|_| H256Error::InvalidHex)?;
         H256::from_slice(&value)
+    }
+}
+
+struct H256Visitor;
+
+impl<'de> Visitor<'de> for H256Visitor {
+    type Value = H256;
+
+    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+        formatter.write_str("A hex value")
+    }
+
+    fn visit_string<E>(self, v: String) -> Result<Self::Value, E>
+        where
+            E: serde::de::Error, {
+        self.visit_str(v.as_str())
+    }
+
+    fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+        where
+            E: serde::de::Error, {
+        let hash_string = H256::from_str(v);
+        match hash_string {
+            Ok(v) => Ok(v),
+            Err(e) => match e {
+                H256Error::InvalidHex => Err(E::custom(format!("Invlaid length: expected 32 bytes"))),
+                H256Error::InvalidLength => Err(E::custom(format!("Invalid hex")))
+            }
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for H256 {
+
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where
+            D: serde::Deserializer<'de> {
+        deserializer.deserialize_string(H256Visitor)
     }
 }
