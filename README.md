@@ -59,7 +59,7 @@ This project focuses on **clean API design**, **custom deserialization**, and **
 
 ### 1. Clone the repo
 
-```
+```sh
 git clone <your-repo-url>
 cd rpc-client-rs
 ```
@@ -70,7 +70,7 @@ cd rpc-client-rs
 
 Create a `.env` file:
 
-```
+```env
 ETH_RPC_URL=https://ethereum-rpc.publicnode.com
 ```
 
@@ -78,7 +78,7 @@ ETH_RPC_URL=https://ethereum-rpc.publicnode.com
 
 ### 3. Run
 
-```
+```sh
 cargo run
 ```
 
@@ -106,6 +106,7 @@ async fn main() {
     println!("Balance: {}", balance);
 }
 ```
+
 Refer to crates/rpc-client/src/main.rs for examples
 
 ---
