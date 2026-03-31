@@ -6,7 +6,7 @@ use serde_json::{Value, json};
 use crate::{
     JsonRpcRequest,
     json_rpc::JsonRpcResponse,
-    types::block::Block,
+    types::{block::Block, log::Log},
 };
 
 pub struct RpcClient {
@@ -48,6 +48,18 @@ impl RpcClient {
         let params = vec![json!(hex_block), json!(true)];
         let block = self.request::<Option<Block>>("eth_getBlockByNumber", params).await?;
         Ok(block)
+    }
+
+    pub async fn get_logs(&self, address: &str, from_block: u64, to_block: u64) -> Result<Vec<Log>, RpcError> {
+        let hex_from_block = format!("{:#x}", from_block);
+        let hex_to_block = format!("{:#x}", to_block);
+        let params = vec![json!({
+            "address": address,
+            "fromBlock": hex_from_block,
+            "toBlock": hex_to_block,
+        })];
+        let logs = self.request::<Vec<Log>>("eth_getLogs", params).await?;
+        Ok(logs)
     }
 
     async fn request<T>(&self, method: &str, params: Vec<Value>) -> Result<T, reqwest::Error> 

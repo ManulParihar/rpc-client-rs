@@ -27,10 +27,17 @@ pub async fn rpc(client: RpcClient) -> Result<(), RpcError>{
     println!("block by number {}:", block_number);
 
     match block {
-        Ok(Some(b)) => println!("{:#?}", b),
+        Ok(Some(b)) => println!("{:?}", b),
         Ok(None) => println!("Block not found"),
         Err(e) => println!("Error: {}", e),
     };
+
+    let logs = client.get_logs(
+        "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+        block_number-1,
+        block_number
+    ).await?;
+    println!("logs: {:?}", logs);
 
     Ok(())
 }
